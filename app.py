@@ -5,16 +5,23 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload
 import io
+import base64
+import json
 
 # Function to authenticate and download file from Google Drive
 def download_file_from_google_drive(file_id, file_name):
     SCOPES = ['https://www.googleapis.com/auth/drive']
     creds = None
 
-    # Load the service account credentials
-    creds = service_account.Credentials.from_service_account_file(
-        'credentials.json', scopes=SCOPES)
-    
+    # Load the service account credentials from environment variable
+    creds_json = os.getenv('GOOGLE_DRIVE_CREDENTIALS')
+    if creds_json:
+        creds_dict = json.loads(base64.b64decode(creds_json))
+        creds = service_account.Credentials.from_service_account_info(creds_dict, scopes=SCOPES)
+    else:
+        st.error("Google Drive credentials not found.")
+        return
+
     service = build('drive', 'v3', credentials=creds)
     request = service.files().get_media(fileId=file_id)
     fh = io.FileIO(file_name, 'wb')

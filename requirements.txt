@@ -1,4 +1,7 @@
 streamlit
-streamlit
 numpy
 pandas
+scikit-learn
+google-auth
+google-auth-oauthlib
+google-auth-httplib2
